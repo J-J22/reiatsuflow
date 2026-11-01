@@ -1,0 +1,6 @@
+# personal data never goes in the repo
+/data/
+*.local.json
+__pycache__/
+*.pyc
+.lock

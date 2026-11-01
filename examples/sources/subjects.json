@@ -1,0 +1,7 @@
+{"topics": [
+ {"s": "OS", "u": 1, "unit": "Processes", "n": "1.1", "t": "Process vs program", "tag": "Go deep"},
+ {"s": "OS", "u": 1, "unit": "Processes", "n": "1.2", "t": "Process states", "tag": "Exam"},
+ {"s": "OS", "u": 1, "unit": "Processes", "n": "1.3", "t": "Schedulers", "tag": "Quick"},
+ {"s": "CN", "u": 1, "unit": "Basics", "n": "1.1", "t": "OSI model", "tag": "Go deep"},
+ {"s": "CN", "u": 1, "unit": "Basics", "n": "1.2", "t": "TCP/IP model", "tag": "Exam"}
+], "try": {"OS.1": "Run ps -ef and find your shell's parent process.", "CN.1": "Draw both models from memory."}}

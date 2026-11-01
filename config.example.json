@@ -1,0 +1,84 @@
+{
+  "data_dir": "~/Documents/planner",
+  "day_starts_at": 4,
+  "start": "2026-11-06",
+  "notify": { "morning": "08:00", "evening": "21:30" },
+  "pomodoro": { "work": 25, "short_break": 5, "long_break": 15, "long_every": 4 },
+
+  "tracks": {
+    "kk": {
+      "name": "Kala-Kalam", "color": "#4fd1c5", "kind": "project",
+      "source": "sources/kala-kalam.md", "format": "milestones-md",
+      "until": "2026-12-01", "deadline": "2026-11-30"
+    },
+    "sem": {
+      "name": "Semester", "color": "#6ea8fe", "kind": "queue",
+      "source": "sources/sem-topics.json", "format": "topics-json", "wrapups": true,
+      "chunk": { "by": "weight", "target": 3, "rotate": "tag", "stop_at_group": true },
+      "revise": "re-read your notes, then solve this unit's previous-year questions",
+      "until": "2026-12-20", "deadline": "2026-12-06"
+    },
+    "vm": {
+      "name": "Vedic Maths", "color": "#b794f6", "kind": "queue",
+      "source": "sources/vm-topics.json", "format": "topics-json",
+      "chunk": { "by": "count", "target": 2 },
+      "until": "2026-12-20", "deadline": "2026-12-04"
+    },
+    "saa": {
+      "name": "AWS SAA", "color": "#ff9f43", "kind": "queue",
+      "source": "sources/saa-maarek-lectures.md", "format": "lectures-md",
+      "chunk": { "by": "size", "target": 40, "stop_at_group": true },
+      "skip": ["on Windows", "on Mac OS", "using Windows"],
+      "prepend": [{ "title": "Account re-check after the laptop loss: root MFA, admin login, delete old access keys, Billing", "group": "0. Before anything", "size": 30 }],
+      "deadline": "2027-01-10"
+    },
+    "labs": {
+      "name": "AWS labs", "color": "#f6c453", "kind": "queue",
+      "source": "~/Documents/aws-cert/LABS.md", "format": "labs-md",
+      "include": ["N1", "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9"],
+      "unlock": {
+        "N1": "saa:0. Before anything",
+        "S1": "saa:4. EC2 SAA level",
+        "S2": "saa:6. High Availability & Scalability: ELB & ASG",
+        "S3": "saa:8. Route 53",
+        "S4": "saa:13. CloudFront & Global Accelerator",
+        "S5": "saa:25. Networking: VPC",
+        "S6": "saa:17. Serverless",
+        "S7": "saa:28. Other Services",
+        "S8": "saa:24. Security & Encryption",
+        "S9": "saa:30. Exam Preparation"
+      },
+      "fallback": "saa"
+    },
+    "dsa": {
+      "name": "DSA", "color": "#68d391", "kind": "queue",
+      "source": "sources/dsa-gfg-roadmap.md", "format": "roadmap-md",
+      "chunk": { "by": "count", "target": 1 }, "min": 1,
+      "deadline": "2027-07-31"
+    },
+    "proj": {
+      "name": "Core project", "color": "#f687b3", "kind": "project",
+      "source": "sources/core-projects.md", "format": "milestones-md"
+    }
+  },
+
+  "schedule": [
+    { "name": "End-sems", "from": "2026-12-07", "to": "2026-12-20", "days": "all",
+      "load": { "sem": 4 }, "fixed": ["AWS: 10 practice questions on weak areas (no new content)"] },
+    { "name": "Pre-exam sprint", "from": "2026-12-02", "to": "2026-12-06", "days": "all",
+      "load": { "sem": 4, "vm": 1, "saa": 1, "dsa": 1 } },
+    { "name": "Sunday", "days": ["sun"],
+      "load": { "kk": 1, "proj": 1, "dsa": 1 }, "fixed": ["AWS: flashcards + redraw this week's diagrams"] },
+    { "name": "Lab day", "days": ["sat"],
+      "load": { "kk": 1, "sem": 2, "labs": 1, "saa": 1, "dsa": 2 } },
+    { "name": "Weekday + VM", "days": ["mon", "wed", "fri"],
+      "load": { "kk": 1, "sem": 2, "vm": 1, "saa": 1, "dsa": 2 } },
+    { "name": "Weekday", "days": ["tue", "thu"],
+      "load": { "kk": 1, "sem": 2, "saa": 1, "dsa": 2 } }
+  ],
+
+  "rebalance": { "behind_days": 2, "donor": "dsa", "horizon_days": 45 },
+  "auto_low_after": 3,
+  "missed_max_rolls": 3,
+  "dated_lookahead": 2
+}

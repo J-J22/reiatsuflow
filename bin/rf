@@ -1,0 +1,4 @@
+#!/bin/sh
+# ReiatsuFlow CLI launcher: runs the rf package from this repo, wherever it is symlinked.
+here=$(dirname "$(readlink -f "$0")")
+PYTHONPATH="$here/..${PYTHONPATH:+:$PYTHONPATH}" exec python3 -m rf "$@"

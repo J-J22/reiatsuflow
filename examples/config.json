@@ -1,0 +1,18 @@
+{
+  "data_dir": "~/.local/share/reiatsuflow-demo",
+  "start": "2026-01-05",
+  "tracks": {
+    "subjects": { "name": "Semester", "color": "#6ea8fe", "source": "sources/subjects.json", "format": "topics-json",
+                  "wrapups": true, "chunk": { "by": "weight", "target": 2, "rotate": "tag", "stop_at_group": true },
+                  "revise": "re-read notes, solve past papers", "deadline": "2026-01-20" },
+    "course":   { "name": "Course", "color": "#ff9f43", "source": "sources/course.md", "format": "lectures-md",
+                  "chunk": { "by": "size", "target": 25, "stop_at_group": true }, "skip": ["on Windows"] },
+    "dsa":      { "name": "DSA", "color": "#68d391", "source": "sources/problems.md", "format": "roadmap-md",
+                  "chunk": { "by": "count", "target": 1 }, "min": 1, "deadline": "2026-02-28" },
+    "proj":     { "name": "Project", "color": "#f687b3", "kind": "project", "source": "sources/projects.md", "format": "milestones-md" }
+  },
+  "schedule": [
+    { "name": "Sunday", "days": ["sun"], "load": { "proj": 1, "dsa": 1 }, "fixed": ["Weekly review"] },
+    { "name": "Weekday", "days": "all", "load": { "subjects": 2, "course": 1, "dsa": 2 } }
+  ]
+}
