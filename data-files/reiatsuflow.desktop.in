@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Name=ReiatsuFlow
+GenericName=Study planner
+Comment=Your lists, a few tasks a day
+Exec=@BIN@/reiatsuflow
+Icon=@ICON@
+Terminal=false
+Categories=Office;Education;
+Keywords=planner;tasks;study;pomodoro;todo;
+Actions=settings;
+
+[Desktop Action settings]
+Name=Settings
+Exec=@BIN@/reiatsuflow --settings

@@ -81,20 +81,21 @@ Requirements: Linux with a Wayland desktop (Hyprland, Sway, KDE…), Python 3.10
 ```sh
 git clone https://github.com/J-J22/reiatsuflow ~/Projects/reiatsuflow
 cd ~/Projects/reiatsuflow && ./install.sh
-qs -c reiatsuflow
+reiatsuflow          # or open "ReiatsuFlow" from your app launcher
 ```
 
-`install.sh` links `rf` into `~/.local/bin` and the UI into `~/.config/quickshell/reiatsuflow`,
+`install.sh` links `rf` and `reiatsuflow` into `~/.local/bin` and the UI into
+`~/.config/quickshell/reiatsuflow`, adds a launcher entry (with a "Settings" action),
 creates an empty config, and installs two systemd user timers for the morning and evening
 notifications. To open the window on workspace 1 at login (Hyprland Lua config):
 
 ```lua
-hl.on("hyprland.start", function () hl.exec_cmd("qs -c reiatsuflow") end)
+hl.on("hyprland.start", function () hl.exec_cmd("reiatsuflow") end)
 hl.window_rule({match = {title = "^(ReiatsuFlow)$"}, workspace = "1 silent"})
 hl.window_rule({match = {title = "^(ReiatsuFlow Settings)$"}, float = true, size = {1060, 760}, center = true})
 ```
 
-Classic `hyprland.conf`: `exec-once = qs -c reiatsuflow`,
+Classic `hyprland.conf`: `exec-once = reiatsuflow`,
 `windowrule = workspace 1 silent, title:^(ReiatsuFlow)$` and
 `windowrule = float, title:^(ReiatsuFlow Settings)$`.
 
