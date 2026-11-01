@@ -383,7 +383,10 @@ class Planner:
         if task_id.startswith("dated:"):
             return None, None
         dd = parse_date(task_id.split(":")[0]) if task_id[:4].isdigit() else (d or self.today())
-        day = self.day(dd)
+        # only today is planned on demand; acting on another day's task never creates that day
+        day = self.day(dd, create=dd == self.today())
+        if not day:
+            raise SystemExit(f"rf: no task {task_id}")
         for t in day["tasks"]:
             if t["id"] == task_id:
                 return day, t
