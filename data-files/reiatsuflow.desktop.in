@@ -6,6 +6,7 @@ Comment=Your lists, a few tasks a day
 Exec=@BIN@/reiatsuflow
 Icon=@ICON@
 Terminal=false
+StartupWMClass=reiatsuflow
 Categories=Office;Education;
 Keywords=planner;tasks;study;pomodoro;todo;
 Actions=settings;

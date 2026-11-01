@@ -1,3 +1,4 @@
+//@ pragma AppId reiatsuflow
 // ReiatsuFlow: task-based study planner. Run with `qs -c reiatsuflow` (installed) or `qs -p <this dir>`.
 // All data comes from the `rf` CLI; see the README.
 import QtQuick

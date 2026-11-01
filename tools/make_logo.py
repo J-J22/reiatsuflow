@@ -1,7 +1,7 @@
 """Draw the ReiatsuFlow logo, a pixel-art hell butterfly (jigokuchō), as SVG.
 
     python3 tools/make_logo.py   ->  data-files/reiatsuflow.svg            (app icon, on a dark tile)
-                                     data-files/reiatsuflow-symbolic.svg   (one colour, for bars)
+                                     data-files/reiatsuflow-symbolic.svg   (one colour, for bars and panels)
                                      ui/logo.svg                           (no tile, for the app header)
 """
 import os
@@ -52,18 +52,23 @@ tile = ('<defs><radialGradient id="g" cx="50%" cy="45%" r="60%">'
         '<stop offset="0" stop-color="#3a1c22"/><stop offset="1" stop-color="#140c10"/></radialGradient></defs>\n'
         '  <rect width="64" height="64" rx="14" fill="url(#g)"/>\n  ')
 write(os.path.join(ROOT, "data-files", "reiatsuflow.svg"), svg(64, tile + rects(FULL, 3, 8, 11)))
-# symbolic: edges, spots and body in one colour (wing fill left empty), recoloured by whoever draws it
-write(os.path.join(ROOT, "data-files", "reiatsuflow-symbolic.svg"),
-      svg(16, rects({"#": "#ffffff", "e": "#ffffff", "b": "#ffffff"}, 1, 0, 1)))
+# symbolic: a simpler silhouette drawn for 16 px (the detailed one turns to mush that small),
+# one colour, recoloured by whoever draws it
+SMALL = [
+    "##..........##",
+    "###...##...###",
+    "####..##..####",
+    "#####.##.#####",
+    "##############",
+    ".############.",
+    "..###.##.###..",
+    ".####.##.####.",
+    ".####....####.",
+    "..##......##..",
+]
+small = "\n  ".join(f'<rect x="{1 + x}" y="{3 + y}" width="1" height="1" fill="#ffffff"/>'
+                    for y, row in enumerate(SMALL) for x, ch in enumerate(row) if ch == "#")
+write(os.path.join(ROOT, "data-files", "reiatsuflow-symbolic.svg"), svg(16, small))
 write(os.path.join(ROOT, "ui", "logo.svg"), svg(48, rects(FULL, 3, 0, 3)))
 print("logo written")
 
-# the bar icon: a pixel zanpakutō, hilt bottom-left, tip top-right (one colour)
-sword = set()
-sword |= {(5 + i, 10 - i) for i in range(10)} | {(6 + i, 10 - i) for i in range(9)} | {(15, 0)}   # blade, 2 px
-for x, y in ((1, 8), (2, 9), (3, 10), (4, 11), (5, 12), (6, 13), (7, 14)):                         # tsuba, 2 px
-    sword |= {(x, y), (x + 1, y)}
-sword |= {(0, 15), (1, 15), (1, 14), (2, 14), (2, 13), (3, 13), (3, 12)}                            # tsuka
-body = "\n  ".join(f'<rect x="{x}" y="{y}" width="1" height="1" fill="#ffffff"/>' for x, y in sorted(sword))
-write(os.path.join(ROOT, "data-files", "reiatsuflow-sword-symbolic.svg"), svg(16, body))
-print("sword written")
