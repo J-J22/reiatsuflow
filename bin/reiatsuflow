@@ -1,12 +1,14 @@
 #!/bin/sh
-# Open ReiatsuFlow. If it's already running, this does nothing new except `--settings`, which opens
+# Open ReiatsuFlow. If it's already running, bring it to the current workspace; `--settings` opens
 # the Settings window. Anything else is passed to quickshell.
 if qs -c reiatsuflow ipc call reiatsuflow refresh >/dev/null 2>&1; then
-    [ "$1" = "--settings" ] && qs -c reiatsuflow ipc call reiatsuflow settings
+    # already running: bring the window to the current workspace (or open Settings)
+    if [ "$1" = "--settings" ]; then qs -c reiatsuflow ipc call reiatsuflow settingsPage 0
+    else qs -c reiatsuflow ipc call reiatsuflow show; fi
     exit 0
 fi
 [ "$1" = "--settings" ] && shift && settings=1
 qs -c reiatsuflow -d "$@" >/dev/null 2>&1
 if [ -n "$settings" ]; then
-    i=0; while [ $i -lt 20 ] && ! qs -c reiatsuflow ipc call reiatsuflow settings >/dev/null 2>&1; do i=$((i+1)); sleep 0.2; done
+    i=0; while [ $i -lt 20 ] && ! qs -c reiatsuflow ipc call reiatsuflow settingsPage 0 >/dev/null 2>&1; do i=$((i+1)); sleep 0.2; done
 fi

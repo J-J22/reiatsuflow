@@ -20,7 +20,15 @@ FloatingWindow {
         { icon: "auto_awesome", label: "AI" }
     ]
 
-    function open(p) { if (p !== undefined) page = p; if (!visible) Cfg.load(); visible = true }
+    // Already open (maybe on another workspace)? Re-show it, so it comes to the current one.
+    function open(p) {
+        if (p !== undefined) page = p
+        if (visible) { visible = false; Qt.callLater(() => visible = true); return }
+        Cfg.load()
+        visible = true
+    }
+    // closed from the compositor (close-window key): forget it, so the gear can open it again
+    onClosed: visible = false
     // from the main window's onboarding: open Settings straight into a new track of that template
     property string pendingTemplate: ""
     property var tracksPage: null

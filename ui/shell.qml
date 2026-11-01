@@ -7,7 +7,7 @@ import Quickshell
 import Quickshell.Io
 
 ShellRoot {
-    SettingsWindow { id: settings }
+    SettingsWindow { id: settingsWin }
 
     FloatingWindow {
         id: win
@@ -18,6 +18,8 @@ ShellRoot {
 
         property int tab: 0
         readonly property var s: Store.s
+        // closing the main window quits the app, so `reiatsuflow` / the launcher can start it again
+        onClosed: Qt.quit()
         readonly property bool empty: !!s && s.tracks.length === 0
         readonly property real progress: s && s.total ? s.done / s.total : 0
         property int lastDone: -1
@@ -59,12 +61,13 @@ ShellRoot {
             target: "reiatsuflow"
             function tab(n: int): void { win.tab = n }
             function refresh(): void { Store.refresh() }
-            function settings(): void { settings.open() }
-            function settingsPage(n: int): void { settings.open(n) }
-            function addTrack(key: string): void { settings.addTrack(key) }
-            function editTrack(id: string): void { settings.open(0); if (settings.tracksPage) settings.tracksPage.selected = id }
-            function closeSettings(): void { settings.visible = false }
+            function settings(): void { settingsWin.open() }
+            function settingsPage(n: int): void { settingsWin.open(n) }
+            function addTrack(key: string): void { settingsWin.addTrack(key) }
+            function editTrack(id: string): void { settingsWin.open(0); if (settingsWin.tracksPage) settingsWin.tracksPage.selected = id }
+            function closeSettings(): void { settingsWin.visible = false }
             function showMain(show: bool): void { win.visible = show }
+            function show(): void { win.visible = false; Qt.callLater(() => win.visible = true) }
         }
 
         Item {
@@ -73,7 +76,7 @@ ShellRoot {
             Keys.onPressed: e => {
                 if (e.key >= Qt.Key_1 && e.key <= Qt.Key_4) win.tab = e.key - Qt.Key_1
                 else if (e.key === Qt.Key_R) Store.refresh()
-                else if (e.key === Qt.Key_Comma) settings.open()
+                else if (e.key === Qt.Key_Comma) settingsWin.open()
             }
         }
 
@@ -165,7 +168,7 @@ ShellRoot {
                     primary: true
                     onClicked: Store.run(["review"])
                 }
-                IconBtn { icon: "settings"; tint: Theme.textDim; onClicked: settings.open() }
+                IconBtn { icon: "settings"; tint: Theme.textDim; onClicked: settingsWin.open() }
             }
 
             // reiatsu bar: today's progress with a glow
@@ -257,7 +260,7 @@ ShellRoot {
                 Onboarding {
                     anchors.fill: parent
                     visible: win.empty
-                    onPickTemplate: k => settings.addTrack(k)
+                    onPickTemplate: k => settingsWin.addTrack(k)
                     agentLabel: win.s && win.s.ai && win.s.ai.agent !== "none" ? win.s.ai.label : ""
                     onAgentSetup: Store.run(["setup"])
                 }
