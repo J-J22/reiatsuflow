@@ -1,5 +1,5 @@
 // All data goes through the rf CLI: `rf status --json` to read, `rf <action>` to change things.
-// Changes made elsewhere (the Claude review, the terminal) show up through the file watchers.
+// Changes made elsewhere (an AI review, MCP, the terminal) show up through the file watchers.
 pragma Singleton
 import QtQuick
 import Quickshell

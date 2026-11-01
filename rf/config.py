@@ -17,7 +17,8 @@ DEFAULTS = {
     "notify": {"morning": "08:00", "evening": "21:30"},
     "pomodoro": {"work": 25, "short_break": 5, "long_break": 15, "long_every": 4},
     "terminal": ["kitty", "--class", "reiatsuflow-review", "--title", "ReiatsuFlow review"],
-    "review_command": ["claude", "Evening review: follow CLAUDE.md in this folder."],
+    "review_command": None,  # older setting; use "ai" now
+    "ai": {"agent": "claude"},
     "rebalance": {"behind_days": 2, "donor": None, "horizon_days": 45},
     "auto_low_after": 3,
     "missed_max_rolls": 3,

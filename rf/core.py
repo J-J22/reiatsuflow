@@ -13,7 +13,7 @@ import os
 import re
 import time
 
-from . import sources
+from . import agents, sources
 from .util import DAYS, daterange, expand, parse_date, read_json, weekday, write_json
 
 
@@ -632,4 +632,5 @@ class Planner:
             "tracks": tracks, "week": self.week(d),
             "pomo": {**p, "remaining": max(0, int(p["ends"] - time.time())) if p and p.get("ends") else 0} if p else None,
             "pomodoro": self.cfg["pomodoro"], "now": time.time(), "data_dir": self.dir,
+            "ai": dict(zip(("agent", "label"), agents.current(self.cfg)[:2])),
         }

@@ -1,8 +1,14 @@
-# ReiatsuFlow review
+# ReiatsuFlow: instructions for AI assistants
 
-This folder is the user's ReiatsuFlow data (study planner). You were opened from the evening
-notification ("Review with Claude") or by `rf review`. Do the review below, briefly and kindly.
-Change data only through the `rf` command, never by editing JSON by hand.
+This folder is the user's ReiatsuFlow data (a task-based planner). You were opened for the evening
+review or for setup, by the app, the evening notification, `rf review` / `rf setup`, or through the
+`reiatsuflow` MCP server. Be brief and kind.
+
+- **With a shell:** change data only through the `rf` command (it's on PATH), never by editing the
+  JSON files by hand.
+- **Through MCP:** use the tools instead: `get_today`, `get_week`, `complete_task`, `undo_task`,
+  `update_project`, `set_low_energy`, `add_deadline`, `resolve_missed`, `get_settings`,
+  `save_settings`, `save_list`. Each `rf` command below has a matching tool.
 
 ## 1. Look at the day
 Run `rf status` (and `rf week` for the last few days). It lists today's tasks with their ids, the streak and any missed dated tasks.

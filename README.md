@@ -21,9 +21,10 @@ keeps you on pace for your deadlines, and never buries you under a pile of "miss
 - **Lively.** Reiatsu sparks when you tick a task, a glowing day bar, a breathing pomodoro ring, and
   a BANKAI moment when the whole day is cleared. Animations only run when something happens.
 - **Pomodoro** on any task, stored in the data files so it survives closing the window.
-- **Claude, optionally.** "Set up with Claude" builds your tracks and week from a conversation;
-  the evening notification's "Review with Claude" goes through the day with you. Both use
-  [Claude Code](https://claude.com/claude-code) and the same `rf` commands as the app.
+- **Any AI, optionally.** Let an assistant set up your tracks from a conversation and go through
+  each evening with you: a terminal agent (Claude Code, Codex CLI, Gemini CLI, OpenCode or your own
+  command), any MCP app (Claude Desktop, Cursor, VS Code, LM Studio…), or any chat AI by copy-paste.
+  Or none at all: everything works without AI.
 
 | First launch | Day cleared |
 |---|---|
@@ -51,7 +52,7 @@ tracks are rebuilt from their lists and today's untouched tasks are re-planned (
 - **Phases.** Date ranges that replace the week, e.g. "Exams: semester only, 4 a day".
 - **Focus & alerts.** Notification times, pomodoro lengths, when the day rolls over, the automatic
   low-energy day, how long missed deadlines wait, and the catch-up rule.
-- **Claude.** "Set up with Claude" and "Review today".
+- **AI.** Pick your agent (or none), copy the MCP config, or copy a ready-made prompt.
 
 ### The list format
 
@@ -74,8 +75,8 @@ Process states | 25m         ← lengths: | 12:30, | 25m or | 1h
 
 ## Install
 
-Requirements: Python 3.10+, Quickshell, `notify-send`, a terminal (kitty by default), optionally
-Claude Code.
+Requirements: Linux with a Wayland desktop (Hyprland, Sway, KDE…), Python 3.10+, Quickshell,
+`notify-send`, a terminal (kitty by default; set `terminal` in the config). Optional: an AI agent.
 
 ```sh
 git clone https://github.com/J-J22/reiatsuflow ~/Projects/reiatsuflow
@@ -100,19 +101,43 @@ Classic `hyprland.conf`: `exec-once = qs -c reiatsuflow`,
 Keys: `1`–`4` switch tabs, `,` opens Settings, `r` refreshes. From scripts:
 `qs -c reiatsuflow ipc call reiatsuflow tab 2`, `… settings`.
 
+## AI (optional)
+
+![AI settings](docs/screenshots/settings-ai.png)
+
+Three ways to bring your own assistant, all on Settings → AI:
+
+1. **An agent in a terminal.** Pick Claude Code, Codex CLI, Gemini CLI, OpenCode, or a custom
+   command (`my-agent {prompt}`). "Set up with …", "Review with …" and the evening notification open
+   it in your data folder, where `AGENTS.md` tells it what to do (`CLAUDE.md` and `GEMINI.md` point
+   there). It changes data only through `rf`. Personal extra steps for your reviews go in
+   `NOTES.md` in the data folder. From a shell: `rf ai`, `rf ai set codex`, `rf ai set custom -- my-agent {prompt}`.
+2. **Any MCP app.** `rf mcp` is a Model Context Protocol server (stdio). Add it to your app:
+   ```json
+   {"mcpServers": {"reiatsuflow": {"command": "rf", "args": ["mcp"]}}}
+   ```
+   Tools: `get_today`, `get_week`, `complete_task`, `undo_task`, `update_project`, `set_low_energy`,
+   `add_deadline`, `resolve_missed`, `start_pomodoro`, `stop_pomodoro`, `get_settings`,
+   `save_settings`, `save_list`; prompts: `review`, `setup`.
+3. **Any chat AI.** `rf prompt review` (or the Copy button) puts today's tasks, pace and missed
+   deadlines into a prompt you can paste anywhere; `rf prompt setup` does the same for setting up.
+   You apply the outcome in the app.
+
+Agent flags change between versions; if a preset doesn't start yours, use Custom.
+
 ## How it works
 
 ```
 your lists ──rf build──► tracks/<id>.json   (queues of items, with progress)
                                 │
-week · phases ──rf status──► days/<date>.json   (today's tasks)   ◄── UI · CLI · Claude
+week · phases ──rf status──► days/<date>.json   (today's tasks)   ◄── UI · CLI · AI
                                 │
                         state.json · log.jsonl   (dated tasks, pomodoro, history)
 ```
 
 Everything goes through one small CLI, `rf` (Python 3, standard library only). The UI calls
 `rf status --json` to read and `rf done …`, `rf pomo …`, `rf config save …` to act, and watches the
-data files, so changes made from a terminal or during a Claude review show up live. A file lock
+data files, so changes made from a terminal, an AI review or an MCP app show up live. A file lock
 keeps concurrent `rf` calls from overwriting each other.
 
 The config lives at `~/.config/reiatsuflow/config.json` (`rf paths` prints where). It's what the
@@ -135,7 +160,11 @@ rf pomo start <task> | stop
 rf skip <item>                   take an item out of its queue
 rf config get | save '<json>'    what the Settings window uses
 rf source preview|save|get …
-rf setup · rf review · rf replan · rf build · rf timers · rf paths
+rf ai [set <agent>]              AI agent for setup and reviews
+rf setup · rf review             open the agent for setup / the evening review
+rf prompt review|setup           a prompt to paste into any chat AI
+rf mcp                           MCP server on stdio
+rf replan · rf build · rf timers · rf paths
 ```
 
 ## Privacy

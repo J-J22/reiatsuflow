@@ -1,11 +1,12 @@
 import QtQuick
 import QtQuick.Layouts
 
-// First launch: no tracks yet. Pick a template (opens Settings) or let Claude set it up.
+// First launch: no tracks yet. Pick a template (opens Settings) or let your AI agent set it up.
 Item {
     id: ob
     signal pickTemplate(string key)
-    signal claude()
+    signal agentSetup()
+    property string agentLabel: "Claude Code"
     readonly property var templates: [
         { key: "course", icon: "play_lesson", label: "Course", color: "#ff9f43", text: "Videos or lessons, ~40 minutes a day" },
         { key: "studies", icon: "school", label: "Studies", color: "#6ea8fe", text: "Subjects and units, rotating daily" },
@@ -75,10 +76,11 @@ Item {
             }
         }
         RowLayout {
+            visible: ob.agentLabel !== ""
             Layout.alignment: Qt.AlignHCenter
             spacing: 12
             Text { text: "Rather describe it?"; color: Theme.textDim; font.family: Theme.ui; font.pixelSize: 14 }
-            Btn { label: "✦  Set up with Claude"; onClicked: ob.claude() }
+            Btn { label: "✦  Set up with " + ob.agentLabel; onClicked: ob.agentSetup() }
         }
     }
 }

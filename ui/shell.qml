@@ -160,8 +160,8 @@ ShellRoot {
                     onClicked: Store.run(["low", win.s.mode === "low" ? "off" : "on"])
                 }
                 Btn {
-                    visible: !win.empty
-                    label: "✦  Review with Claude"
+                    visible: !win.empty && !!win.s && !!win.s.ai && win.s.ai.agent !== "none"
+                    label: "✦  Review with " + (win.s && win.s.ai ? win.s.ai.label : "AI")
                     primary: true
                     onClicked: Store.run(["review"])
                 }
@@ -258,7 +258,8 @@ ShellRoot {
                     anchors.fill: parent
                     visible: win.empty
                     onPickTemplate: k => settings.addTrack(k)
-                    onClaude: Store.run(["setup"])
+                    agentLabel: win.s && win.s.ai && win.s.ai.agent !== "none" ? win.s.ai.label : ""
+                    onAgentSetup: Store.run(["setup"])
                 }
 
                 Repeater {

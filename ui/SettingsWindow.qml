@@ -17,7 +17,7 @@ FloatingWindow {
         { icon: "calendar_view_week", label: "Week" },
         { icon: "date_range", label: "Phases" },
         { icon: "notifications", label: "Focus & alerts" },
-        { icon: "auto_awesome", label: "Claude" }
+        { icon: "auto_awesome", label: "AI" }
     ]
 
     function open(p) { if (p !== undefined) page = p; if (!visible) Cfg.load(); visible = true }
@@ -160,5 +160,5 @@ FloatingWindow {
     Component { id: weekC; WeekPage {} }
     Component { id: phasesC; PhasesPage {} }
     Component { id: alertsC; AlertsPage {} }
-    Component { id: claudeC; ClaudePage {} }
+    Component { id: claudeC; AiPage {} }
 }

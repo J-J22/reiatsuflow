@@ -182,3 +182,50 @@ class ListFormatAndWeekTest(unittest.TestCase):
         errors = config.save({"tracks": {"Bad Id": {}}, "week": {"funday": {}}}, "/nonexistent/x.json")
         self.assertEqual(len(errors), 4)
 
+
+
+class AiTest(unittest.TestCase):
+    def test_agent_argv(self):
+        from rf import agents
+        self.assertEqual(agents.argv({"ai": {"agent": "claude"}}, "review")[0], "claude")
+        self.assertEqual(agents.argv({"ai": {"agent": "gemini"}}, "setup")[:2], ["gemini", "--prompt-interactive"])
+        self.assertIsNone(agents.argv({"ai": {"agent": "none"}}, "review"))
+        custom = agents.argv({"ai": {"agent": "custom", "command": ["my-ai", "--chat"]}}, "review")
+        self.assertEqual(custom[:2], ["my-ai", "--chat"])
+        self.assertIn("AGENTS.md", custom[2])
+        # older configs that only had review_command keep working
+        self.assertEqual(agents.argv({"review_command": ["aider", "{prompt}"]}, "review")[0], "aider")
+
+    def test_mcp_session(self):
+        import io
+        import sys
+        from rf import mcp
+        tmp = tempfile.mkdtemp()
+        try:
+            shutil.copytree(os.path.join(ROOT, "examples", "sources"), os.path.join(tmp, "sources"))
+            with open(os.path.join(ROOT, "examples", "config.json")) as f:
+                cfg = json.load(f)
+            cfg["data_dir"] = tmp
+            path = os.path.join(tmp, "config.json")
+            with open(path, "w") as f:
+                json.dump(cfg, f)
+            Planner(config.load(path)).build()
+            msgs = [{"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2025-06-18"}},
+                    {"jsonrpc": "2.0", "method": "notifications/initialized"},
+                    {"jsonrpc": "2.0", "id": 2, "method": "tools/list"},
+                    {"jsonrpc": "2.0", "id": 3, "method": "tools/call", "params": {"name": "get_today", "arguments": {}}},
+                    {"jsonrpc": "2.0", "id": 4, "method": "tools/call", "params": {"name": "complete_task", "arguments": {"task_id": "nope"}}}]
+            old_in, old_out = sys.stdin, sys.stdout
+            sys.stdin, sys.stdout = io.StringIO("\n".join(json.dumps(m) for m in msgs) + "\n"), io.StringIO()
+            try:
+                mcp.serve(path)
+                out = [json.loads(x) for x in sys.stdout.getvalue().splitlines()]
+            finally:
+                sys.stdin, sys.stdout = old_in, old_out
+            self.assertEqual([m["id"] for m in out], [1, 2, 3, 4])
+            self.assertEqual(out[0]["result"]["serverInfo"]["name"], "reiatsuflow")
+            self.assertIn("complete_task", [t["name"] for t in out[1]["result"]["tools"]])
+            self.assertIn("tasks", json.loads(out[2]["result"]["content"][0]["text"]))
+            self.assertTrue(out[3]["result"]["isError"])
+        finally:
+            shutil.rmtree(tmp)

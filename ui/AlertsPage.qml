@@ -37,7 +37,7 @@ Flickable {
             Field { implicitWidth: 90; mono: true; mask: "99:99"; text: page.d ? page.d.notify.morning : ""; onEdited: x => Cfg.edit(dd => dd.notify.morning = x) }
         }
         Row2 {
-            label: "Evening review"; hint: "Shows how the day went, with a “Review with Claude” button."
+            label: "Evening review"; hint: "Shows how the day went, with a button to review it with your AI agent (if you use one)."
             Field { implicitWidth: 90; mono: true; mask: "99:99"; text: page.d ? page.d.notify.evening : ""; onEdited: x => Cfg.edit(dd => dd.notify.evening = x) }
         }
 
