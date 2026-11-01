@@ -17,7 +17,9 @@ cp "$repo/data-files/reiatsuflow.svg" "$icons/reiatsuflow.svg"
 cp "$repo/data-files/reiatsuflow-symbolic.svg" "$icons/reiatsuflow-symbolic.svg"
 sed -e "s|@BIN@|$HOME/.local/bin|g" -e "s|@ICON@|reiatsuflow|g" "$repo/data-files/reiatsuflow.desktop.in" > "$apps/reiatsuflow.desktop"
 update-desktop-database "$apps" 2>/dev/null || true
-echo "added ReiatsuFlow to the app launcher"
+# refresh the icon cache, or launchers that use it won't see the new icon
+[ -f "$HOME/.local/share/icons/hicolor/index.theme" ] && gtk-update-icon-cache -q -f "$HOME/.local/share/icons/hicolor" 2>/dev/null || true
+echo "added ReiatsuFlow to the app launcher (if its icon is missing, restart your shell/launcher once)"
 
 "$repo/bin/rf" init          # copies config.example.json to ~/.config/reiatsuflow/config.json if missing
 "$repo/bin/rf" timers        # morning + evening notifications from config "notify"
