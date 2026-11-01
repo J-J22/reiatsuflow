@@ -16,7 +16,7 @@ Rectangle {
     implicitHeight: compact ? 32 : 36
     radius: height / 2
     color: s.value > 0 ? Theme.mix(Theme.surface2, s.tint, 0.18) : Theme.surface2
-    Behavior on color { ColorAnimation { duration: 140 } }
+    Behavior on color { ColorAnimation { duration: Theme.dur(140) } }
     // emits only: the owner writes the new value to its data and the binding brings it back
     function set(v) { v = Math.max(from, Math.min(to, v)); if (v !== value) changed(v) }
     RowLayout {
@@ -38,7 +38,7 @@ Rectangle {
                     font.family: modelData === 0 ? Theme.pixel : Theme.ui
                     font.pixelSize: modelData === 0 ? (s.compact ? 10 : 11) : 16
                     scale: modelData === 0 && bump.running ? 1.25 : 1
-                    Behavior on scale { NumberAnimation { duration: 120 } }
+                    Behavior on scale { NumberAnimation { duration: Theme.dur(120) } }
                 }
                 HoverHandler { id: h; enabled: modelData !== 0; cursorShape: Qt.PointingHandCursor }
                 TapHandler { enabled: modelData !== 0; onTapped: { s.set(s.value + modelData * s.step); bump.restart() } }

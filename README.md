@@ -6,8 +6,10 @@ keeps you on pace for your deadlines, and never buries you under a pile of "miss
 
 ![Today](docs/screenshots/today.png)
 
-- **Native and offline.** A [Quickshell](https://quickshell.org) window, no browser. Opens on
-  workspace 1 at login and takes its colours from your wallpaper palette (matugen / end-4).
+- **Native and offline.** A [Quickshell](https://quickshell.org) window, no browser.
+- **Fits any rice.** Follows your wallpaper (matugen / end-4) or pywal live, your system's light/dark
+  setting, or one of eight built-in themes (Catppuccin, Nord, Gruvbox, Tokyo Night…), or any colours
+  file you point it at. Fonts and icons are bundled, so it looks right everywhere.
 - **Your workflow, not a preset.** Four templates (Course, Studies, Project, Custom), each fully
   configurable, so a track can be a guitar course, a thesis or a semester as easily as a problem sheet.
 - **Task-based, not time-blocked.** Each track is a queue. Every day takes the next chunk from each:
@@ -52,7 +54,29 @@ tracks are rebuilt from their lists and today's untouched tasks are re-planned (
 - **Phases.** Date ranges that replace the week, e.g. "Exams: semester only, 4 a day".
 - **Focus & alerts.** Notification times, pomodoro lengths, when the day rolls over, the automatic
   low-energy day, how long missed deadlines wait, and the catch-up rule.
+- **Appearance.** Theme source, accent and reduced motion, previewed live (see below).
 - **AI.** Pick your agent (or none), copy the MCP config, or copy a ready-made prompt.
+
+### Appearance
+
+| Settings → Appearance | A light theme (Catppuccin Latte) |
+|---|---|
+| ![Appearance](docs/screenshots/settings-appearance.png) | ![Light theme](docs/screenshots/light.png) |
+
+- **Auto** (default): matugen if it's there (end-4 and other Material You rices), else pywal, else
+  your desktop's light/dark preference.
+- **Wallpaper (matugen)** and **pywal** follow those files live, so a wallpaper or theme switch
+  re-colours the app instantly.
+- **System**: built-in Light or Dark, following the desktop colour-scheme setting.
+- **Built-ins**: Reiatsu, Dark, Light, Catppuccin Mocha and Latte, Nord, Gruvbox, Tokyo Night.
+- **Custom file**: any JSON in matugen shape, pywal shape, or
+  `{"bg", "surface", "surface2", "surface3", "text", "textDim", "outline", "accent", "danger"}`. It's
+  watched too, so your own theme scripts can drive it.
+- **Accent**: from the theme, any colour, or (if you use the Bleach rice it was born in) the current
+  character.
+- **Reduced motion** turns off sparks, slides and breathing.
+
+Track colours are deepened automatically on light themes so they stay readable.
 
 ### The list format
 
@@ -77,6 +101,7 @@ Process states | 25m         ← lengths: | 12:30, | 25m or | 1h
 
 Requirements: Linux with a Wayland desktop (Hyprland, Sway, KDE…), Python 3.10+, Quickshell,
 `notify-send`, a terminal (kitty by default; set `terminal` in the config). Optional: an AI agent.
+Fonts are bundled (see `ui/fonts/README.md` for their licences).
 
 ```sh
 git clone https://github.com/J-J22/reiatsuflow ~/Projects/reiatsuflow

@@ -37,6 +37,7 @@ Singleton {
             d.pomodoro = Object.assign({}, v.defaults.pomodoro, d.pomodoro || {})
             d.rebalance = Object.assign({}, v.defaults.rebalance, d.rebalance || {})
             d.ai = d.ai || { agent: v.ai.agent }
+            d.appearance = Object.assign({}, v.defaults.appearance, d.appearance || {})
             for (const k of ["day_starts_at", "auto_low_after", "missed_max_rolls"])
                 if (d[k] === undefined) d[k] = v.defaults[k]
             draft = d

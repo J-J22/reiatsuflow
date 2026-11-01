@@ -580,7 +580,8 @@ class Planner:
             done = sum(1 for t in tasks if t["status"] == "done")
             out.append({"date": x.isoformat(), "dow": DAYS[k], "kind": kind, "rule": self.rule_for(x)["name"],
                         "planned": len(tasks), "done": done,
-                        "tasks": [{"track": t["track"], "title": t["title"], "status": t["status"]} for t in tasks]})
+                        "tasks": [{"track": t["track"], "title": t["title"], "status": t["status"],
+                                   "color": self.cfg["tracks"].get(t["track"], {}).get("color", "#999999")} for t in tasks]})
         return out
 
     def status(self, d=None):
@@ -633,4 +634,5 @@ class Planner:
             "pomo": {**p, "remaining": max(0, int(p["ends"] - time.time())) if p and p.get("ends") else 0} if p else None,
             "pomodoro": self.cfg["pomodoro"], "now": time.time(), "data_dir": self.dir,
             "ai": dict(zip(("agent", "label"), agents.current(self.cfg)[:2])),
+            "appearance": self.cfg["appearance"],
         }

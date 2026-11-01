@@ -17,6 +17,7 @@ FloatingWindow {
         { icon: "calendar_view_week", label: "Week" },
         { icon: "date_range", label: "Phases" },
         { icon: "notifications", label: "Focus & alerts" },
+        { icon: "palette", label: "Appearance" },
         { icon: "auto_awesome", label: "AI" }
     ]
 
@@ -72,7 +73,7 @@ FloatingWindow {
                         implicitHeight: 42
                         radius: 12
                         color: sw.page === index ? Theme.mix(Theme.surface, Theme.accent, 0.18) : (nh.hovered ? Theme.surface2 : "transparent")
-                        Behavior on color { ColorAnimation { duration: 120 } }
+                        Behavior on color { ColorAnimation { duration: Theme.dur(120) } }
                         RowLayout {
                             anchors { fill: parent; leftMargin: 12 }
                             spacing: 12
@@ -104,7 +105,7 @@ FloatingWindow {
                 Layout.margins: 26
                 // crossfade between pages
                 Repeater {
-                    model: 5
+                    model: 6
                     delegate: Loader {
                         required property int index
                         anchors.fill: parent
@@ -112,9 +113,9 @@ FloatingWindow {
                         opacity: sw.page === index ? 1 : 0
                         visible: opacity > 0
                         y: sw.page === index ? 0 : 10
-                        Behavior on opacity { NumberAnimation { duration: 180 } }
-                        Behavior on y { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
-                        sourceComponent: [tracksC, weekC, phasesC, alertsC, claudeC][index]
+                        Behavior on opacity { NumberAnimation { duration: Theme.dur(180) } }
+                        Behavior on y { NumberAnimation { duration: Theme.dur(220); easing.type: Easing.OutCubic } }
+                        sourceComponent: [tracksC, weekC, phasesC, alertsC, appearC, claudeC][index]
                     }
                 }
                 Text {
@@ -168,5 +169,6 @@ FloatingWindow {
     Component { id: weekC; WeekPage {} }
     Component { id: phasesC; PhasesPage {} }
     Component { id: alertsC; AlertsPage {} }
+    Component { id: appearC; AppearancePage {} }
     Component { id: claudeC; AiPage {} }
 }

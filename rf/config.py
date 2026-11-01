@@ -19,6 +19,7 @@ DEFAULTS = {
     "terminal": ["kitty", "--class", "reiatsuflow-review", "--title", "ReiatsuFlow review"],
     "review_command": None,  # older setting; use "ai" now
     "ai": {"agent": "claude"},
+    "appearance": {"theme": "auto", "accent": "theme", "motion": "full"},
     "rebalance": {"behind_days": 2, "donor": None, "horizon_days": 45},
     "auto_low_after": 3,
     "missed_max_rolls": 3,
@@ -80,7 +81,7 @@ def load(path=None):
         else:
             raise SystemExit(f"rf: no config at {path}")
     cfg = {**DEFAULTS, **read_json(path, {})}
-    for k in ("notify", "pomodoro", "rebalance"):
+    for k in ("notify", "pomodoro", "rebalance", "appearance"):
         cfg[k] = {**DEFAULTS[k], **cfg.get(k, {})}
     cfg["data_dir"] = expand(cfg["data_dir"])
     cfg["_path"] = path

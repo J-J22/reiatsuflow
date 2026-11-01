@@ -12,12 +12,12 @@ RowLayout {
     Rectangle {
         implicitWidth: 44; implicitHeight: 24; radius: 12
         color: t.checked ? Theme.accent : Theme.surface3
-        Behavior on color { ColorAnimation { duration: 150 } }
+        Behavior on color { ColorAnimation { duration: Theme.dur(150) } }
         Rectangle {
             width: 18; height: 18; radius: 9; y: 3
             x: t.checked ? 23 : 3
             color: t.checked ? Theme.inkAccent : Theme.textDim
-            Behavior on x { NumberAnimation { duration: 180; easing.type: Easing.OutBack } }
+            Behavior on x { NumberAnimation { duration: Theme.dur(180); easing.type: Easing.OutBack } }
         }
         HoverHandler { cursorShape: Qt.PointingHandCursor }
         TapHandler { onTapped: t.toggled(!t.checked) }  // owner updates `checked` through its binding

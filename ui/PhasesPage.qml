@@ -53,10 +53,10 @@ Flickable {
                                 required property string modelData
                                 readonly property var tr: page.d.tracks[modelData]
                                 spacing: 6
-                                Rectangle { implicitWidth: 8; implicitHeight: 8; radius: 4; color: tr.color }
+                                Rectangle { implicitWidth: 8; implicitHeight: 8; radius: 4; color: Theme.tc(tr.color) }
                                 Text { text: tr.name; color: Theme.text; font.family: Theme.ui; font.pixelSize: 12 }
                                 Stepper {
-                                    compact: true; to: 9; tint: tr.color
+                                    compact: true; to: 9; tint: Theme.tc(tr.color)
                                     value: (card.ph.load || {})[modelData] || 0
                                     onChanged: v => Cfg.edit(dd => { dd.phases[card.index].load = dd.phases[card.index].load || {}; dd.phases[card.index].load[modelData] = v })
                                 }

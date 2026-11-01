@@ -15,7 +15,7 @@ Rectangle {
     color: primary || active ? tint : (hover.hovered ? Theme.surface3 : Theme.surface2)
     border.width: primary || active ? 0 : 1
     border.color: Theme.outline
-    Behavior on color { ColorAnimation { duration: 120 } }
+    Behavior on color { ColorAnimation { duration: Theme.dur(120) } }
 
     Text {
         id: txt

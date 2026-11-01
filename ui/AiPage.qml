@@ -46,7 +46,7 @@ Flickable {
                     color: on ? Theme.mix(Theme.surface2, Theme.accent, 0.16) : (ah.hovered ? Theme.surface3 : Theme.surface2)
                     border.width: on ? 1 : 0
                     border.color: Theme.accent
-                    Behavior on color { ColorAnimation { duration: 130 } }
+                    Behavior on color { ColorAnimation { duration: Theme.dur(130) } }
                     RowLayout {
                         anchors { fill: parent; margins: 12 }
                         spacing: 10

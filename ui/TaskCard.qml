@@ -17,7 +17,7 @@ Rectangle {
     color: focused ? Theme.mix(Theme.surface2, task.color, 0.14) : (hover.hovered ? Theme.surface2 : Theme.surface)
     border.width: focused || hover.hovered ? 1 : 0
     border.color: focused ? task.color : Theme.outline
-    Behavior on color { ColorAnimation { duration: 160 } }
+    Behavior on color { ColorAnimation { duration: Theme.dur(160) } }
 
     // entrance: fade + rise, staggered by position
     opacity: 0
@@ -25,14 +25,14 @@ Rectangle {
     Component.onCompleted: enter.start()
     SequentialAnimation {
         id: enter
-        PauseAnimation { duration: Math.min(card.order, 10) * 45 }
+        PauseAnimation { duration: Theme.dur(Math.min(card.order, 10) * 45) }
         ParallelAnimation {
-            NumberAnimation { target: card; property: "opacity"; to: card.done ? 0.6 : 1; duration: 280 }
-            NumberAnimation { target: shift; property: "y"; to: 0; duration: 380; easing.type: Easing.OutCubic }
+            NumberAnimation { target: card; property: "opacity"; to: card.done ? 0.6 : 1; duration: Theme.dur(280) }
+            NumberAnimation { target: shift; property: "y"; to: 0; duration: Theme.dur(380); easing.type: Easing.OutCubic }
         }
     }
     onDoneChanged: if (!enter.running) fade.restart()
-    NumberAnimation { id: fade; target: card; property: "opacity"; to: card.done ? 0.6 : 1; duration: 400 }
+    NumberAnimation { id: fade; target: card; property: "opacity"; to: card.done ? 0.6 : 1; duration: Theme.dur(400) }
 
     // glow when focused
     layer.enabled: focused
@@ -133,8 +133,8 @@ Rectangle {
                 Component.onCompleted: subIn.start()
                 SequentialAnimation {
                     id: subIn
-                    PauseAnimation { duration: sub.index * 25 }
-                    NumberAnimation { target: sub; property: "opacity"; to: 1; duration: 180 }
+                    PauseAnimation { duration: Theme.dur(sub.index * 25) }
+                    NumberAnimation { target: sub; property: "opacity"; to: 1; duration: Theme.dur(180) }
                 }
                 Check {
                     size: 18

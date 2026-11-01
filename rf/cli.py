@@ -10,6 +10,8 @@ from . import agents, config
 from .core import Planner
 from .util import expand, parse_date, write_json
 
+THEME_FILES = {"matugen": "~/.local/state/quickshell/user/generated/colors.json",
+               "pywal": "~/.cache/wal/colors.json", "bleach": "~/.local/state/nvim/bleach-character"}
 MANAGED = "<!-- ReiatsuFlow: generated, safe to delete; personal steps go in NOTES.md -->"
 
 
@@ -273,7 +275,8 @@ def config_cmd(a, p, cfg):
         print(json.dumps({"config": config.raw(cfg["_path"]), "defaults": config.DEFAULTS, "templates": TEMPLATES,
                           "colors": COLORS, "tracks_info": info, "path": cfg["_path"], "data_dir": p.dir,
                           "agents": agents.listing(), "ai": {"agent": key, "label": label, "command": cmd},
-                          "mcp": {"mcpServers": {"reiatsuflow": {"command": rf, "args": ["mcp"]}}}},
+                          "mcp": {"mcpServers": {"reiatsuflow": {"command": rf, "args": ["mcp"]}}},
+                          "theme_sources": {k: os.path.exists(os.path.expanduser(v)) for k, v in THEME_FILES.items()}},
                          ensure_ascii=False))
         return
     data = json.loads(a.json)

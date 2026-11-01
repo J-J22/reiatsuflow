@@ -51,20 +51,20 @@ Item {
                     Component.onCompleted: enter.start()
                     SequentialAnimation {
                         id: enter
-                        PauseAnimation { duration: 120 + c.index * 90 }
+                        PauseAnimation { duration: Theme.dur(120 + c.index * 90) }
                         ParallelAnimation {
-                            NumberAnimation { target: c; property: "opacity"; to: 1; duration: 350 }
-                            NumberAnimation { target: tr; property: "y"; to: 0; duration: 450; easing.type: Easing.OutBack }
+                            NumberAnimation { target: c; property: "opacity"; to: 1; duration: Theme.dur(350) }
+                            NumberAnimation { target: tr; property: "y"; to: 0; duration: Theme.dur(450); easing.type: Easing.OutBack }
                         }
                     }
-                    Behavior on color { ColorAnimation { duration: 150 } }
+                    Behavior on color { ColorAnimation { duration: Theme.dur(150) } }
                     ColumnLayout {
                         anchors { fill: parent; margins: 20 }
                         spacing: 8
                         Icon {
-                            name: c.modelData.icon; size: 40; color: c.modelData.color
+                            name: c.modelData.icon; size: 40; color: Theme.tc(c.modelData.color)
                             scale: h.hovered ? 1.15 : 1
-                            Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutBack } }
+                            Behavior on scale { NumberAnimation { duration: Theme.dur(200); easing.type: Easing.OutBack } }
                         }
                         Item { Layout.fillHeight: true }
                         Text { text: c.modelData.label; color: Theme.text; font.family: Theme.ui; font.pixelSize: 19; font.weight: Font.Medium }

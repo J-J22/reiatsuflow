@@ -19,8 +19,8 @@ Rectangle {
     border.width: 1
     border.color: Theme.outline
     opacity: shown ? 1 : 0
-    Behavior on y { NumberAnimation { duration: 260; easing.type: Easing.OutBack } }
-    Behavior on opacity { NumberAnimation { duration: 180 } }
+    Behavior on y { NumberAnimation { duration: Theme.dur(260); easing.type: Easing.OutBack } }
+    Behavior on opacity { NumberAnimation { duration: Theme.dur(180) } }
     RowLayout {
         id: row
         anchors.centerIn: parent

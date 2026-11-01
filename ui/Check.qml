@@ -13,8 +13,8 @@ Item {
     onState_Changed: if (state_ === "done") pop.restart()
     SequentialAnimation {
         id: pop
-        NumberAnimation { target: root; property: "scale"; to: 1.35; duration: 110; easing.type: Easing.OutQuad }
-        NumberAnimation { target: root; property: "scale"; to: 1; duration: 320; easing.type: Easing.OutBack }
+        NumberAnimation { target: root; property: "scale"; to: 1.35; duration: Theme.dur(110); easing.type: Easing.OutQuad }
+        NumberAnimation { target: root; property: "scale"; to: 1; duration: Theme.dur(320); easing.type: Easing.OutBack }
     }
 
     Rectangle {
@@ -23,7 +23,7 @@ Item {
         color: root.state_ === "done" ? root.tint : "transparent"
         border.width: 2
         border.color: root.state_ === "todo" && !hover.hovered ? Theme.outline : root.tint
-        Behavior on color { ColorAnimation { duration: 140 } }
+        Behavior on color { ColorAnimation { duration: Theme.dur(140) } }
 
         Rectangle {  // partial: left half filled
             visible: root.state_ === "partial"

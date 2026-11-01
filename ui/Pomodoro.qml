@@ -52,7 +52,7 @@ Rectangle {
                 visible: false
                 property real value: 0.5
                 SequentialAnimation on value {
-                    running: pomo.running && pomo.p.phase === "work"
+                    running: pomo.running && pomo.p.phase === "work" && !Theme.reduced
                     loops: Animation.Infinite
                     NumberAnimation { to: 0.9; duration: 2400; easing.type: Easing.InOutSine }
                     NumberAnimation { to: 0.35; duration: 2400; easing.type: Easing.InOutSine }

@@ -36,7 +36,14 @@ Singleton {
         command: [store.rf, "status", "--json"]
         stdout: StdioCollector {
             onStreamFinished: {
-                try { store.s = JSON.parse(text); store.error = "" }
+                try {
+                    const v = JSON.parse(text)
+                    // track colours are tuned for dark themes; deepen them on light ones
+                    for (const t of v.tasks) t.color = Theme.tc(t.color)
+                    for (const t of v.tracks) t.color = Theme.tc(t.color)
+                    for (const d of v.week) for (const t of d.tasks) t.color = Theme.tc(t.color || "#999999")
+                    store.s = v; store.error = ""
+                }
                 catch (e) { store.error = "rf status failed: " + text.slice(0, 200) }
             }
         }

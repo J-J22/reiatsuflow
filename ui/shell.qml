@@ -106,7 +106,7 @@ ShellRoot {
                         text: win.mood()
                         color: win.s && (win.s.mode === "low" || (win.s.total && win.s.done === win.s.total)) ? Theme.accent : Theme.textDim
                         font.family: Theme.ui; font.pixelSize: 13
-                        Behavior on color { ColorAnimation { duration: 300 } }
+                        Behavior on color { ColorAnimation { duration: Theme.dur(300) } }
                     }
                 }
                 Item { Layout.fillWidth: true }
@@ -119,7 +119,7 @@ ShellRoot {
                         id: ring
                         anchors.fill: parent
                         property real p: win.progress
-                        Behavior on p { NumberAnimation { duration: 600; easing.type: Easing.OutCubic } }
+                        Behavior on p { NumberAnimation { duration: Theme.dur(600); easing.type: Easing.OutCubic } }
                         onPChanged: requestPaint()
                         onPaint: {
                             const c = getContext("2d"); c.reset()
@@ -148,8 +148,8 @@ ShellRoot {
                             SequentialAnimation on scale {
                                 running: win.s && win.s.streak > 0
                                 loops: 1
-                                NumberAnimation { to: 1.3; duration: 160 }
-                                NumberAnimation { to: 1; duration: 260; easing.type: Easing.OutBack }
+                                NumberAnimation { to: 1.3; duration: Theme.dur(160) }
+                                NumberAnimation { to: 1; duration: Theme.dur(260); easing.type: Easing.OutBack }
                             }
                         }
                         Text { text: win.s ? win.s.streak : "0"; color: Theme.text; font.family: Theme.pixel; font.pixelSize: 16 }
@@ -182,7 +182,7 @@ ShellRoot {
                     height: parent.height
                     radius: 3
                     width: parent.width * win.progress
-                    Behavior on width { NumberAnimation { duration: 700; easing.type: Easing.OutCubic } }
+                    Behavior on width { NumberAnimation { duration: Theme.dur(700); easing.type: Easing.OutCubic } }
                     gradient: Gradient {
                         orientation: Gradient.Horizontal
                         GradientStop { position: 0; color: Theme.mix(Theme.accent, Theme.bg, 0.4) }
@@ -209,8 +209,8 @@ ShellRoot {
                         height: parent.height
                         radius: height / 2
                         color: win.tab === 3 && win.s && win.s.missed.length ? Theme.danger : Theme.accent
-                        Behavior on x { NumberAnimation { duration: 260; easing.type: Easing.OutCubic } }
-                        Behavior on width { NumberAnimation { duration: 260; easing.type: Easing.OutCubic } }
+                        Behavior on x { NumberAnimation { duration: Theme.dur(260); easing.type: Easing.OutCubic } }
+                        Behavior on width { NumberAnimation { duration: Theme.dur(260); easing.type: Easing.OutCubic } }
                     }
                     Row {
                         id: tabRow
@@ -272,8 +272,8 @@ ShellRoot {
                         anchors.fill: parent
                         opacity: win.tab === index ? 1 : 0
                         visible: opacity > 0
-                        transform: Translate { y: win.tab === index ? 0 : 14; Behavior on y { NumberAnimation { duration: 260; easing.type: Easing.OutCubic } } }
-                        Behavior on opacity { NumberAnimation { duration: 200 } }
+                        transform: Translate { y: win.tab === index ? 0 : 14; Behavior on y { NumberAnimation { duration: Theme.dur(260); easing.type: Easing.OutCubic } } }
+                        Behavior on opacity { NumberAnimation { duration: Theme.dur(200) } }
                         sourceComponent: [todayC, weekC, tracksC, missedC][index]
                     }
                 }

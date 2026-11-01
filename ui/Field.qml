@@ -15,7 +15,7 @@ Rectangle {
     color: Theme.surface2
     border.width: 1
     border.color: input.activeFocus ? Theme.accent : Theme.outline
-    Behavior on border.color { ColorAnimation { duration: 120 } }
+    Behavior on border.color { ColorAnimation { duration: Theme.dur(120) } }
     TextInput {
         id: input
         anchors { fill: parent; leftMargin: f.compact ? 6 : 12; rightMargin: f.compact ? 6 : 12 }

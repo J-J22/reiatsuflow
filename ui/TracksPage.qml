@@ -31,15 +31,15 @@ RowLayout {
                 implicitHeight: 58
                 radius: 14
                 color: page.selected === modelData && !page.picking ? Theme.surface3 : (h.hovered ? Theme.surface2 : "transparent")
-                Behavior on color { ColorAnimation { duration: 120 } }
+                Behavior on color { ColorAnimation { duration: Theme.dur(120) } }
                 RowLayout {
                     anchors { fill: parent; leftMargin: 12; rightMargin: 12 }
                     spacing: 10
                     Rectangle {
                         implicitWidth: 34; implicitHeight: 34; radius: 10
-                        color: Theme.mix(Theme.surface, row.tr.color, 0.25)
+                        color: Theme.mix(Theme.surface, Theme.tc(row.tr.color), 0.25)
                         Icon {
-                            anchors.centerIn: parent; size: 19; color: row.tr.color
+                            anchors.centerIn: parent; size: 19; color: Theme.tc(row.tr.color)
                             name: Cfg.data && Cfg.data.templates[row.tr.template] ? Cfg.data.templates[row.tr.template].icon : "list"
                         }
                     }
@@ -110,15 +110,15 @@ RowLayout {
                         Component.onCompleted: appear.start()
                         ParallelAnimation {
                             id: appear
-                            PauseAnimation { duration: tcard.index * 60 }
-                            NumberAnimation { target: tcard; property: "opacity"; to: 1; duration: 260 }
+                            PauseAnimation { duration: Theme.dur(tcard.index * 60) }
+                            NumberAnimation { target: tcard; property: "opacity"; to: 1; duration: Theme.dur(260) }
                         }
-                        Behavior on color { ColorAnimation { duration: 140 } }
-                        Behavior on scale { NumberAnimation { duration: 90 } }
+                        Behavior on color { ColorAnimation { duration: Theme.dur(140) } }
+                        Behavior on scale { NumberAnimation { duration: Theme.dur(90) } }
                         ColumnLayout {
                             anchors { fill: parent; margins: 16 }
                             spacing: 6
-                            Icon { name: tcard.tp.icon; size: 30; color: tcard.tp.color }
+                            Icon { name: tcard.tp.icon; size: 30; color: Theme.tc(tcard.tp.color) }
                             Text { text: tcard.tp.label; color: Theme.text; font.family: Theme.ui; font.pixelSize: 17; font.weight: Font.Medium }
                             Text {
                                 text: tcard.tp.desc; color: Theme.textDim; font.family: Theme.ui; font.pixelSize: 12

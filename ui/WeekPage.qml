@@ -62,7 +62,7 @@ Flickable {
                         visible: cell.col === 0
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 8
-                        Rectangle { implicitWidth: 10; implicitHeight: 10; radius: 5; color: cell.tr ? cell.tr.color : "gray" }
+                        Rectangle { implicitWidth: 10; implicitHeight: 10; radius: 5; color: cell.tr ? Theme.tc(cell.tr.color) : "gray" }
                         Text {
                             text: cell.tr ? cell.tr.name : ""; color: Theme.text; elide: Text.ElideRight; Layout.maximumWidth: 125
                             font.family: Theme.ui; font.pixelSize: 13
@@ -73,7 +73,7 @@ Flickable {
                         visible: cell.col > 0
                         anchors.centerIn: parent
                         compact: true
-                        tint: cell.tr ? cell.tr.color : Theme.accent
+                        tint: cell.tr ? Theme.tc(cell.tr.color) : Theme.accent
                         to: 9
                         value: cell.col > 0 && cell.tr ? (page.d.week[Cfg.days[cell.col - 1]].load[cell.tid] || 0) : 0
                         onChanged: v => Cfg.edit(dd => { dd.week[Cfg.days[cell.col - 1]].load[cell.tid] = v })

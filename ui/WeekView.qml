@@ -17,10 +17,10 @@ RowLayout {
             Component.onCompleted: enter.start()
             SequentialAnimation {
                 id: enter
-                PauseAnimation { duration: dayCard.index * 50 }
+                PauseAnimation { duration: Theme.dur(dayCard.index * 50) }
                 ParallelAnimation {
-                    NumberAnimation { target: dayCard; property: "opacity"; to: 1; duration: 260 }
-                    NumberAnimation { target: rise; property: "y"; to: 0; duration: 360; easing.type: Easing.OutCubic }
+                    NumberAnimation { target: dayCard; property: "opacity"; to: 1; duration: Theme.dur(260) }
+                    NumberAnimation { target: rise; property: "y"; to: 0; duration: Theme.dur(360); easing.type: Easing.OutCubic }
                 }
             }
             readonly property bool today: modelData.kind === "today"

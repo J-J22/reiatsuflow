@@ -11,6 +11,7 @@ Item {
     enabled: false   // never steals clicks
 
     function burst(x, y, color, n) {
+        if (Theme.reduced) return
         sparks.color = color
         emitter.burst(n || 36, x, y)
     }
@@ -76,12 +77,12 @@ Item {
         SequentialAnimation {
             id: anim
             ParallelAnimation {
-                NumberAnimation { target: banner; property: "opacity"; to: 1; duration: 220 }
-                NumberAnimation { target: banner; property: "scale"; from: 0.6; to: 1.08; duration: 320; easing.type: Easing.OutBack }
+                NumberAnimation { target: banner; property: "opacity"; to: 1; duration: Theme.dur(220) }
+                NumberAnimation { target: banner; property: "scale"; from: 0.6; to: 1.08; duration: Theme.dur(320); easing.type: Easing.OutBack }
             }
-            NumberAnimation { target: banner; property: "scale"; to: 1; duration: 160 }
+            NumberAnimation { target: banner; property: "scale"; to: 1; duration: Theme.dur(160) }
             PauseAnimation { duration: 1700 }
-            NumberAnimation { target: banner; property: "opacity"; to: 0; duration: 500 }
+            NumberAnimation { target: banner; property: "opacity"; to: 0; duration: Theme.dur(500) }
         }
     }
 }

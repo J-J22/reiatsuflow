@@ -39,8 +39,8 @@ ColumnLayout {
         spacing: 12
         Rectangle {
             implicitWidth: 46; implicitHeight: 46; radius: 14
-            color: ed.t ? Theme.mix(Theme.surface, ed.t.color, 0.25) : "transparent"
-            Icon { anchors.centerIn: parent; size: 26; color: ed.t ? ed.t.color : Theme.text; name: ed.tp ? ed.tp.icon : "list" }
+            color: ed.t ? Theme.mix(Theme.surface, Theme.tc(ed.t.color), 0.25) : "transparent"
+            Icon { anchors.centerIn: parent; size: 26; color: ed.t ? Theme.tc(ed.t.color) : Theme.text; name: ed.tp ? ed.tp.icon : "list" }
         }
         ColumnLayout {
             spacing: 0
@@ -70,7 +70,7 @@ ColumnLayout {
                 border.width: ed.t && ed.t.color === modelData ? 3 : 0
                 border.color: Theme.text
                 scale: sh.hovered ? 1.15 : 1
-                Behavior on scale { NumberAnimation { duration: 100 } }
+                Behavior on scale { NumberAnimation { duration: Theme.dur(100) } }
                 HoverHandler { id: sh; cursorShape: Qt.PointingHandCursor }
                 TapHandler { onTapped: ed.set("color", modelData) }
             }
@@ -101,7 +101,7 @@ ColumnLayout {
     RowLayout {
         visible: ed.listFormat && !!ed.preview
         spacing: 10
-        Icon { name: ed.preview && ed.preview.count ? "check_circle" : "info"; size: 18; color: ed.preview && ed.preview.count ? (ed.t ? ed.t.color : Theme.accent) : Theme.textDim }
+        Icon { name: ed.preview && ed.preview.count ? "check_circle" : "info"; size: 18; color: ed.preview && ed.preview.count ? (ed.t ? Theme.tc(ed.t.color) : Theme.accent) : Theme.textDim }
         Text {
             Layout.fillWidth: true
             wrapMode: Text.Wrap
@@ -147,7 +147,7 @@ ColumnLayout {
             from: 1; to: ed.chunk("by", "count") === "size" ? 240 : 20
             step: ed.chunk("by", "count") === "size" ? 5 : 1
             suffix: ed.chunk("by", "count") === "size" ? "m" : ""
-            tint: ed.t ? ed.t.color : Theme.accent
+            tint: ed.t ? Theme.tc(ed.t.color) : Theme.accent
             onChanged: v => ed.setChunk("target", v)
         }
     }
