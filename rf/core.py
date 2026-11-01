@@ -101,7 +101,20 @@ class Planner:
         if start and d < parse_date(start):
             return {"name": f"Plan starts {parse_date(start).strftime('%a %d %b')}", "load": {}}
         wd = weekday(d)
-        for r in self.cfg["schedule"]:
+        # phases (date ranges like an exam fortnight) override the week grid
+        for ph in self.cfg.get("phases", []):
+            if ph.get("from") and d < parse_date(ph["from"]):
+                continue
+            if ph.get("to") and d > parse_date(ph["to"]):
+                continue
+            days = ph.get("days", "all")
+            if days != "all" and wd not in days:
+                continue
+            return {"name": ph.get("name", "Phase"), "load": ph.get("load", {}), "fixed": ph.get("routines", [])}
+        if self.cfg.get("week"):
+            w = self.cfg["week"].get(wd, {})
+            return {"name": w.get("label") or d.strftime("%A"), "load": w.get("load", {}), "fixed": w.get("routines", [])}
+        for r in self.cfg.get("schedule", []):  # older rule-list format
             if r.get("from") and d < parse_date(r["from"]):
                 continue
             if r.get("to") and d > parse_date(r["to"]):
@@ -114,6 +127,8 @@ class Planner:
 
     def active(self, tid, d):
         tc = self.cfg["tracks"].get(tid, {})
+        if tc.get("paused"):
+            return False
         if tc.get("until") and d > parse_date(tc["until"]):
             return False
         start = tc.get("start") or self.cfg.get("start")
@@ -206,7 +221,7 @@ class Planner:
             title = f"{subject} {rng}{extra} · {unit.split(': ', 1)[-1]}"
             sub = "; ".join(x["title"].split(" ", 1)[1] if m else x["title"] for x, m in zip(items, nums))
         else:
-            noun = "lectures" if by_size else "items"
+            noun = "lessons" if by_size else "items"
             title = f"{group} · {len(items)} {noun}"
             sub = items[0]["title"] + " → " + items[-1]["title"]
         if by_size and len(items) > 1:
@@ -214,13 +229,15 @@ class Planner:
         return dict(id=f"{d}:{tid}:{i}", track=tid, title=title, sub=sub, items=[x["id"] for x in items],
                     status="todo", done_items=[], pomos=0)
 
-    def plan_tasks(self, d, taken, rot, low=False, rebalance=True):
+    def plan_tasks(self, d, taken, rot, low=False, rebalance=True, already=None):
+        """`already`: tasks per track the day already has (when re-planning), so they aren't added twice."""
         rule, load = self.base_load(d)
         if rebalance and not low:
             load = self._rebalance(d, load)
+        already = already or {}
         tasks = []
         for tid, n in load.items():
-            for _ in range(1 if low else n):
+            for _ in range(max(0, (1 if low else n) - already.get(tid, 0))):
                 items = self.next_chunk(tid, taken, rot, low)
                 fb = self.cfg["tracks"][tid].get("fallback")
                 if not items and fb and not low and self.active(fb, d):
@@ -262,6 +279,8 @@ class Planner:
         rb = self.cfg["rebalance"]
         donor = rb["donor"]
         load = dict(load)
+        if not donor or donor not in load:
+            return load
         for tid in list(load):
             dl = self.cfg["tracks"][tid].get("deadline")
             if not dl or (parse_date(dl) - d).days > rb["horizon_days"] or tid == donor:
@@ -304,16 +323,23 @@ class Planner:
             day["mode"] = "low" if low else "normal"
         keep = [t for t in day["tasks"] if t["status"] != "todo" or t["done_items"] or t["pomos"]]
         taken = {i for t in keep for i in t["items"]}
-        _, fresh = self.plan_tasks(d, taken, st["rot"], day["mode"] == "low")
+        already = {}
+        for t in keep:
+            already[t["track"]] = already.get(t["track"], 0) + 1
+        _, fresh = self.plan_tasks(d, taken, st["rot"], day["mode"] == "low", already=already)
         kept_tracks = [t["track"] for t in keep]
+        # new tasks get fresh ids; kept ones keep theirs (the pomodoro may point at them)
+        n = 1 + max([int(t["id"].rsplit(":", 1)[1]) for t in day["tasks"] if t["id"].rsplit(":", 1)[1].isdigit()] or [-1])
         for t in fresh:
             if t["track"] == "fixed" and any(k["title"] == t["title"] for k in keep):
                 continue
             if t["track"] in kept_tracks and self.tracks()[t["track"]]["kind"] == "project":
                 continue
+            t["id"] = f"{d}:{t['track']}:{n}"
+            n += 1
             keep.append(t)
-        for i, t in enumerate(keep):
-            t["id"] = f"{d}:{t['track']}:{i}"
+        order = list(self.base_load(d)[1]) + ["fixed"]
+        keep.sort(key=lambda t: order.index(t["track"]) if t["track"] in order else len(order))
         day["tasks"] = keep
         self.save_day(day)
         self.save_state(st)

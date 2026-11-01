@@ -129,3 +129,56 @@ class PlannerTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+    def test_replan_keeps_done_and_does_not_double_load(self):
+        day = self.p.day(MON)
+        n = len(day["tasks"])
+        first = [t for t in day["tasks"] if t["track"] == "subjects"][0]
+        self.p.done(first["id"])
+        day = self.p.replan(MON)
+        self.assertEqual(len(day["tasks"]), n)
+        self.assertIn(first["id"], [t["id"] for t in day["tasks"]])
+        self.assertEqual(len({t["id"] for t in day["tasks"]}), n)
+        low = self.p.replan(MON, low=True)
+        self.assertEqual([t["track"] for t in low["tasks"]].count("subjects"), 1)
+
+class ListFormatAndWeekTest(unittest.TestCase):
+    def test_list_md(self):
+        from rf.sources import list_md
+        items = list_md("# OS\n## Unit 1\n- Processes | 12:30\n1. Threads | 25m\n* Pipes | 1h\nSockets\n# CN\nOSI\n", "x")
+        self.assertEqual([i["title"] for i in items], ["Processes", "Threads", "Pipes", "Sockets", "OSI"])
+        self.assertEqual([i["size"] for i in items], [13, 25, 60, 10, 10])
+        self.assertEqual(items[0]["group"], "OS · Unit 1")
+        self.assertEqual(items[4]["tag"], "CN")
+
+    def test_week_grid_and_phases(self):
+        tmp = tempfile.mkdtemp()
+        try:
+            os.makedirs(os.path.join(tmp, "sources"))
+            with open(os.path.join(tmp, "sources", "a.md"), "w") as f:
+                f.write("## S\n" + "\n".join(f"item {i}" for i in range(20)))
+            cfg = {"data_dir": tmp, "tracks": {"a": {"name": "A", "source": "sources/a.md", "format": "list-md",
+                                                     "chunk": {"by": "count", "target": 1}}},
+                   "week": {"mon": {"load": {"a": 2}, "label": "Busy"}, "sun": {"routines": ["Review"]}},
+                   "phases": [{"name": "Exams", "from": "2026-01-12", "to": "2026-01-18", "load": {"a": 3}}]}
+            path = os.path.join(tmp, "config.json")
+            self.assertEqual(config.save(cfg, path), [])
+            p = Planner(config.load(path))
+            p.build()
+            p.today = lambda: MON
+            day = p.day(MON)
+            self.assertEqual(day["rule"], "Busy")
+            self.assertEqual(len(day["tasks"]), 2)
+            sun = MON + dt.timedelta(days=6)
+            self.assertEqual([t["title"] for t in p.plan_tasks(sun, set(), {})[1]], ["Review"])
+            exam = MON + dt.timedelta(days=8)
+            rule, tasks = p.plan_tasks(exam, set(), {})
+            self.assertEqual((rule["name"], len(tasks)), ("Exams", 3))
+        finally:
+            shutil.rmtree(tmp)
+
+    def test_config_validation(self):
+        errors = config.save({"tracks": {"Bad Id": {}}, "week": {"funday": {}}}, "/nonexistent/x.json")
+        self.assertEqual(len(errors), 4)
+

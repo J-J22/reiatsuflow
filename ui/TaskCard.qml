@@ -1,23 +1,53 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Effects
 
 // One task of the day. Batches (lectures, topics) expand into their items, each tickable.
 Rectangle {
     id: card
     property var task
+    property int order: 0
     property bool expanded: false
     readonly property bool done: task.status === "done"
     readonly property bool focused: Store.s && Store.s.pomo && Store.s.pomo.task === task.id && Store.s.pomo.phase !== "idle"
+    signal sparked(real x, real y, color c)
 
     implicitHeight: col.implicitHeight + 24
-    radius: 14
-    color: focused ? Theme.mix(Theme.surface2, task.color, 0.12) : (hover.hovered ? Theme.surface2 : Theme.surface)
-    border.width: focused ? 1 : 0
-    border.color: task.color
-    opacity: done ? 0.62 : 1
-    Behavior on opacity { NumberAnimation { duration: 160 } }
+    radius: 16
+    color: focused ? Theme.mix(Theme.surface2, task.color, 0.14) : (hover.hovered ? Theme.surface2 : Theme.surface)
+    border.width: focused || hover.hovered ? 1 : 0
+    border.color: focused ? task.color : Theme.outline
+    Behavior on color { ColorAnimation { duration: 160 } }
+
+    // entrance: fade + rise, staggered by position
+    opacity: 0
+    transform: Translate { id: shift; y: 18 }
+    Component.onCompleted: enter.start()
+    SequentialAnimation {
+        id: enter
+        PauseAnimation { duration: Math.min(card.order, 10) * 45 }
+        ParallelAnimation {
+            NumberAnimation { target: card; property: "opacity"; to: card.done ? 0.6 : 1; duration: 280 }
+            NumberAnimation { target: shift; property: "y"; to: 0; duration: 380; easing.type: Easing.OutCubic }
+        }
+    }
+    onDoneChanged: if (!enter.running) fade.restart()
+    NumberAnimation { id: fade; target: card; property: "opacity"; to: card.done ? 0.6 : 1; duration: 400 }
+
+    // glow when focused
+    layer.enabled: focused
+    layer.effect: MultiEffect { shadowEnabled: true; shadowColor: card.task.color; shadowBlur: 0.7; shadowOpacity: 0.5 }
 
     HoverHandler { id: hover }
+
+    function toggle() {
+        const finishing = !(done || task.status === "partial")
+        if (finishing) {
+            const p = check.mapToItem(null, check.width / 2, check.height / 2)
+            sparked(p.x, p.y, task.color)
+        }
+        Store.run([finishing ? "done" : "undo", task.id])
+    }
 
     ColumnLayout {
         id: col
@@ -29,9 +59,10 @@ Rectangle {
             Layout.fillWidth: true
 
             Check {
+                id: check
                 state_: card.task.status === "skipped" ? "todo" : card.task.status
                 tint: card.task.color
-                onToggled: Store.run([card.done || card.task.status === "partial" ? "undo" : "done", card.task.id])
+                onToggled: card.toggle()
             }
 
             ColumnLayout {
@@ -49,11 +80,9 @@ Rectangle {
                             font.family: Theme.ui; font.pixelSize: 11; font.weight: Font.DemiBold
                         }
                     }
-                    Text {
-                        visible: card.task.pomos > 0
-                        text: "● ".repeat(Math.min(card.task.pomos, 8)).trim()
-                        color: card.task.color
-                        font.pixelSize: 9
+                    Repeater {
+                        model: Math.min(card.task.pomos, 8)
+                        delegate: Icon { name: "timer"; size: 13; color: card.task.color }
                     }
                 }
                 Text {
@@ -75,16 +104,17 @@ Rectangle {
                 }
             }
 
-            Btn {
+            IconBtn {
                 visible: card.task.sub_items.length > 0
-                label: card.expanded ? "▴" : card.task.sub_items.length + " ▾"
+                icon: card.expanded ? "expand_less" : "expand_more"
+                tint: Theme.textDim
                 onClicked: card.expanded = !card.expanded
             }
-            Btn {
+            IconBtn {
                 visible: !card.done && card.task.track !== "dated"
-                label: card.focused ? "■" : "▶"
-                active: card.focused
+                icon: card.focused ? "stop" : "play_arrow"
                 tint: card.task.color
+                filled: card.focused
                 onClicked: Store.run(card.focused ? ["pomo", "stop"] : ["pomo", "start", card.task.id])
             }
         }
@@ -93,10 +123,19 @@ Rectangle {
         Repeater {
             model: card.expanded ? card.task.sub_items : []
             delegate: RowLayout {
+                id: sub
                 required property var modelData
+                required property int index
                 Layout.fillWidth: true
                 Layout.leftMargin: 38
                 spacing: 10
+                opacity: 0
+                Component.onCompleted: subIn.start()
+                SequentialAnimation {
+                    id: subIn
+                    PauseAnimation { duration: sub.index * 25 }
+                    NumberAnimation { target: sub; property: "opacity"; to: 1; duration: 180 }
+                }
                 Check {
                     size: 18
                     state_: modelData.done ? "done" : "todo"

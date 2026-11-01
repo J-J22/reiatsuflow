@@ -116,7 +116,48 @@ def labs_md(text, prefix, include=(), **_):
     return _ids(items, prefix)
 
 
+DURATION = re.compile(r"\s*\|\s*(?:(\d+):(\d\d)|(\d+)\s*(m|min|mins|h|hr|hrs)?)\s*$", re.I)
+BULLET = re.compile(r"^\s*(?:[-*+]|\d+[.)]|\[[ xX]\])\s+")
+
+
+def list_md(text, prefix, **_):
+    """The everyday format. `# Subject` (optional) and `## Section` headings, then one item per line.
+    Bullets and numbering are fine. An optional `| 12:30`, `| 25m` or `| 1h` sets the item's length.
+    Untimed items count as 10 minutes when a track is chunked by minutes."""
+    items, h1, h2 = [], "", ""
+    for raw in text.splitlines():
+        line = raw.rstrip()
+        if not line.strip() or line.lstrip().startswith((">", "<!--")):
+            continue
+        if line.startswith("# "):
+            h1, h2 = line[2:].strip(), ""
+            continue
+        if line.startswith("## "):
+            h2 = line[3:].strip()
+            continue
+        if line.startswith("#"):
+            continue
+        title = BULLET.sub("", line).strip()
+        size, sub = 10, ""
+        m = DURATION.search(title)
+        if m:
+            title = title[: m.start()].strip()
+            if m.group(1):
+                size = int(m.group(1)) + (1 if int(m.group(2)) >= 30 else 0)
+                sub = f"{m.group(1)}:{m.group(2)}"
+            else:
+                n = int(m.group(3))
+                size = n * 60 if (m.group(4) or "m").lower().startswith("h") else n
+                sub = f"{size} min"
+        if not title:
+            continue
+        group = " · ".join(x for x in (h1, h2) if x) or "List"
+        items.append(dict(title=title, group=group, sub=sub, size=max(size, 1), tag=h1 or h2 or "List"))
+    return _ids(items, prefix)
+
+
 FORMATS = {
+    "list-md": list_md,
     "roadmap-md": roadmap_md,
     "lectures-md": lectures_md,
     "milestones-md": milestones_md,

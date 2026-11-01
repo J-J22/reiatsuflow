@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Effects
 
 // Pomodoro. The end time lives in rf's state.json, so the timer survives closing the window.
 Rectangle {
@@ -37,10 +38,26 @@ Rectangle {
             font.family: Theme.pixel; font.pixelSize: 10
         }
 
-        // ring + time
+        // ring + time; the ring glows and slowly breathes while you focus
         Item {
             Layout.alignment: Qt.AlignHCenter
             implicitWidth: 190; implicitHeight: 190
+            layer.enabled: pomo.running
+            layer.effect: MultiEffect {
+                shadowEnabled: true; shadowColor: pomo.tint; shadowBlur: 1.0
+                shadowOpacity: breath.value
+            }
+            Item {
+                id: breath
+                visible: false
+                property real value: 0.5
+                SequentialAnimation on value {
+                    running: pomo.running && pomo.p.phase === "work"
+                    loops: Animation.Infinite
+                    NumberAnimation { to: 0.9; duration: 2400; easing.type: Easing.InOutSine }
+                    NumberAnimation { to: 0.35; duration: 2400; easing.type: Easing.InOutSine }
+                }
+            }
             Canvas {
                 id: ring
                 anchors.fill: parent
@@ -82,13 +99,13 @@ Rectangle {
             spacing: 8
             Btn {
                 visible: pomo.running
-                label: "Stop"
+                label: "■  Stop"
                 onClicked: Store.run(["pomo", "stop"])
             }
             Btn {
                 visible: !pomo.running && pomo.p && pomo.p.task
                 primary: true
-                label: "Next pomodoro"
+                label: "▶  Next pomodoro"
                 onClicked: Store.run(["pomo", "start", pomo.p.task])
             }
         }

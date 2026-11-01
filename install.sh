@@ -19,8 +19,10 @@ Done. Start the window with:   qs -c reiatsuflow
 Hyprland (Lua config, e.g. ~/.config/hypr/custom/):
   hl.on("hyprland.start", function () hl.exec_cmd("qs -c reiatsuflow") end)
   hl.window_rule({match = {title = "^(ReiatsuFlow)$"}, workspace = "1 silent"})
+  hl.window_rule({match = {title = "^(ReiatsuFlow Settings)$"}, float = true, size = {1060, 760}, center = true})
 
 Hyprland (classic hyprland.conf):
   exec-once = qs -c reiatsuflow
   windowrule = workspace 1 silent, title:^(ReiatsuFlow)$
+  windowrule = float, title:^(ReiatsuFlow Settings)$
 EOF

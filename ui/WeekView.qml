@@ -11,6 +11,18 @@ RowLayout {
         delegate: Rectangle {
             id: dayCard
             required property var modelData
+            required property int index
+            opacity: 0
+            transform: Translate { id: rise; y: 20 }
+            Component.onCompleted: enter.start()
+            SequentialAnimation {
+                id: enter
+                PauseAnimation { duration: dayCard.index * 50 }
+                ParallelAnimation {
+                    NumberAnimation { target: dayCard; property: "opacity"; to: 1; duration: 260 }
+                    NumberAnimation { target: rise; property: "y"; to: 0; duration: 360; easing.type: Easing.OutCubic }
+                }
+            }
             readonly property bool today: modelData.kind === "today"
             Layout.fillWidth: true
             Layout.fillHeight: true

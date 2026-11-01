@@ -18,8 +18,10 @@ Singleton {
         if (statusProc.running) { again = true; return }
         statusProc.running = true
     }
+    signal acted(var args)
     function run(args) {
         queue = queue.concat([args])
+        acted(args)
         next()
     }
     function next() {

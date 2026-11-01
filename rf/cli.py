@@ -8,7 +8,7 @@ import sys
 
 from . import config
 from .core import Planner
-from .util import parse_date, write_json
+from .util import expand, parse_date, write_json
 
 REVIEW_PROMPT = "Evening review: follow CLAUDE.md in this folder."
 
@@ -97,6 +97,14 @@ def main(argv=None):
     s.add_argument("when", choices=["morning", "evening"])
     sub.add_parser("review", help="open the evening review with Claude in a terminal")
     sub.add_parser("paths", help="print config and data paths")
+    s = sub.add_parser("config", help="settings: get (JSON for the Settings window) | save JSON")
+    s.add_argument("action", choices=["get", "save"])
+    s.add_argument("json", nargs="?")
+    s = sub.add_parser("source", help="track lists: preview FORMAT TEXT | save TRACK TEXT | get TRACK")
+    s.add_argument("action", choices=["preview", "save", "get"])
+    s.add_argument("target")
+    s.add_argument("text", nargs="?")
+    sub.add_parser("setup", help="set up tracks and schedule by talking to Claude")
     s = sub.add_parser("timers", help="install systemd user timers for the notify times in the config")
     s.add_argument("--remove", action="store_true")
 
@@ -178,6 +186,12 @@ def run(a, p, cfg):
         return
     elif a.cmd == "review":
         return review(p, cfg)
+    elif a.cmd == "config":
+        return config_cmd(a, p, cfg)
+    elif a.cmd == "source":
+        out = source_cmd(a, p, cfg)
+    elif a.cmd == "setup":
+        return review(p, cfg, SETUP_PROMPT)
     elif a.cmd == "timers":
         return timers(cfg, a.remove)
     if out is not None:
@@ -214,8 +228,65 @@ def timers(cfg, remove=False):
     print(("removed " if remove else "installed ") + ", ".join(f"{n}.timer" for n in names))
 
 
-def review(p, cfg):
-    cmd = list(cfg["terminal"]) + ["--directory", p.dir] + list(cfg["review_command"] or ["claude", REVIEW_PROMPT])
+SETUP_PROMPT = ("Set up ReiatsuFlow with me: follow the 'Setup' section of CLAUDE.md in this folder. "
+                "Ask what I want to study or build, one question at a time.")
+
+
+def config_cmd(a, p, cfg):
+    from .templates import COLORS, TEMPLATES
+    if a.action == "get":
+        info = {}
+        for tid, t in p.tracks().items():
+            items = [it for it in t["items"] if it["status"] != "skipped"]
+            info[tid] = {"items": len(items), "done": sum(1 for it in items if it["status"] == "done")}
+        print(json.dumps({"config": config.raw(cfg["_path"]), "defaults": config.DEFAULTS, "templates": TEMPLATES,
+                          "colors": COLORS, "tracks_info": info, "path": cfg["_path"], "data_dir": p.dir},
+                         ensure_ascii=False))
+        return
+    data = json.loads(a.json)
+    errors = config.save(data, cfg["_path"])
+    if errors:
+        print(json.dumps({"ok": False, "errors": errors}))
+        return 1
+    p2 = Planner(config.load(cfg["_path"]))
+    counts = p2.build()
+    p2.replan()
+    if cfg["notify"] != p2.cfg["notify"] and shutil.which("systemctl"):
+        timers(p2.cfg)
+    print(json.dumps({"ok": True, "tracks": counts}))
+
+
+def source_cmd(a, p, cfg):
+    from . import sources
+    if a.action == "preview":
+        items = sources.FORMATS[a.target](a.text or "", "preview")
+        groups = []
+        for it in items:
+            if it["group"] not in groups:
+                groups.append(it["group"])
+        return {"count": len(items), "groups": groups[:12], "first": [it["title"] for it in items[:5]],
+                "minutes": sum(it["size"] for it in items) if any(it["sub"] for it in items) else None}
+    path = p.p("sources", f"{a.target}.md")
+    if a.action == "get":
+        tc = cfg["tracks"].get(a.target, {})
+        src = tc.get("source", f"sources/{a.target}.md")
+        full = expand(src) if src.startswith(("~", "/")) else p.p(src)
+        try:
+            with open(full, encoding="utf-8") as f:
+                return {"path": full, "text": f.read()}
+        except FileNotFoundError:
+            return {"path": full, "text": ""}
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(a.text or "")
+    return {"path": f"sources/{a.target}.md"}
+
+
+def review(p, cfg, prompt=None):
+    command = list(cfg["review_command"] or ["claude", REVIEW_PROMPT])
+    if prompt:
+        command = command[:1] + [prompt]
+    cmd = list(cfg["terminal"]) + ["--directory", p.dir] + command
     subprocess.Popen(cmd, start_new_session=True)
 
 

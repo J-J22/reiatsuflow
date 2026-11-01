@@ -2,17 +2,27 @@
   "data_dir": "~/.local/share/reiatsuflow-demo",
   "start": "2026-01-05",
   "tracks": {
-    "subjects": { "name": "Semester", "color": "#6ea8fe", "source": "sources/subjects.json", "format": "topics-json",
-                  "wrapups": true, "chunk": { "by": "weight", "target": 2, "rotate": "tag", "stop_at_group": true },
+    "subjects": { "name": "Semester", "color": "#6ea8fe", "template": "studies", "kind": "queue",
+                  "source": "sources/subjects.json", "format": "topics-json", "wrapups": true,
+                  "chunk": { "by": "weight", "target": 2, "rotate": "tag", "stop_at_group": true },
                   "revise": "re-read notes, solve past papers", "deadline": "2026-01-20" },
-    "course":   { "name": "Course", "color": "#ff9f43", "source": "sources/course.md", "format": "lectures-md",
+    "course":   { "name": "Course", "color": "#ff9f43", "template": "course", "kind": "queue",
+                  "source": "sources/course.md", "format": "lectures-md",
                   "chunk": { "by": "size", "target": 25, "stop_at_group": true }, "skip": ["on Windows"] },
-    "dsa":      { "name": "DSA", "color": "#68d391", "source": "sources/problems.md", "format": "roadmap-md",
+    "dsa":      { "name": "Practice", "color": "#68d391", "template": "custom", "kind": "queue",
+                  "source": "sources/problems.md", "format": "roadmap-md",
                   "chunk": { "by": "count", "target": 1 }, "min": 1, "deadline": "2026-02-28" },
-    "proj":     { "name": "Project", "color": "#f687b3", "kind": "project", "source": "sources/projects.md", "format": "milestones-md" }
+    "proj":     { "name": "Project", "color": "#f687b3", "template": "project", "kind": "project",
+                  "source": "sources/projects.md", "format": "list-md" }
   },
-  "schedule": [
-    { "name": "Sunday", "days": ["sun"], "load": { "proj": 1, "dsa": 1 }, "fixed": ["Weekly review"] },
-    { "name": "Weekday", "days": "all", "load": { "subjects": 2, "course": 1, "dsa": 2 } }
-  ]
+  "week": {
+    "mon": { "load": { "subjects": 2, "course": 1, "dsa": 2 } },
+    "tue": { "load": { "subjects": 2, "course": 1, "dsa": 2 } },
+    "wed": { "load": { "subjects": 2, "course": 1, "dsa": 2 } },
+    "thu": { "load": { "subjects": 2, "course": 1, "dsa": 2 } },
+    "fri": { "load": { "subjects": 2, "course": 1, "dsa": 2 } },
+    "sat": { "load": { "subjects": 2, "course": 1, "dsa": 2 } },
+    "sun": { "load": { "proj": 1, "dsa": 1 }, "routines": ["Weekly review"] }
+  },
+  "rebalance": { "behind_days": 2, "donor": "dsa", "horizon_days": 45 }
 }

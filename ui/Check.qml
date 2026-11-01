@@ -10,6 +10,12 @@ Item {
 
     implicitWidth: size
     implicitHeight: size
+    onState_Changed: if (state_ === "done") pop.restart()
+    SequentialAnimation {
+        id: pop
+        NumberAnimation { target: root; property: "scale"; to: 1.35; duration: 110; easing.type: Easing.OutQuad }
+        NumberAnimation { target: root; property: "scale"; to: 1; duration: 320; easing.type: Easing.OutBack }
+    }
 
     Rectangle {
         anchors.fill: parent
