@@ -14,6 +14,8 @@ echo "linked rf, reiatsuflow -> ~/.local/bin and ui -> ~/.config/quickshell/reia
 apps="$HOME/.local/share/applications"; icons="$HOME/.local/share/icons/hicolor/scalable/apps"
 mkdir -p "$apps" "$icons"
 cp "$repo/data-files/reiatsuflow.svg" "$icons/reiatsuflow.svg"
+cp "$repo/data-files/reiatsuflow-symbolic.svg" "$icons/reiatsuflow-symbolic.svg"
+cp "$repo/data-files/reiatsuflow-sword-symbolic.svg" "$icons/reiatsuflow-sword-symbolic.svg"
 sed -e "s|@BIN@|$HOME/.local/bin|g" -e "s|@ICON@|reiatsuflow|g" "$repo/data-files/reiatsuflow.desktop.in" > "$apps/reiatsuflow.desktop"
 update-desktop-database "$apps" 2>/dev/null || true
 echo "added ReiatsuFlow to the app launcher"

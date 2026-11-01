@@ -1,3 +1,5 @@
+<p align="center"><img src="data-files/reiatsuflow.svg" width="96" alt="ReiatsuFlow logo: a pixel hell butterfly"></p>
+
 # ReiatsuFlow
 
 A task-based planner that lives on your Hyprland desktop. Give it your lists (a video course, a
@@ -110,7 +112,8 @@ reiatsuflow          # or open "ReiatsuFlow" from your app launcher
 ```
 
 `install.sh` links `rf` and `reiatsuflow` into `~/.local/bin` and the UI into
-`~/.config/quickshell/reiatsuflow`, adds a launcher entry (with a "Settings" action),
+`~/.config/quickshell/reiatsuflow`, adds a launcher entry (with a "Settings" action) and icons
+(the app logo, plus one-colour butterfly and sword icons for bars),
 creates an empty config, and installs two systemd user timers for the morning and evening
 notifications. To open the window on workspace 1 at login (Hyprland Lua config):
 

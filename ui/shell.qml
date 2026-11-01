@@ -91,6 +91,25 @@ ShellRoot {
                 ColumnLayout {
                     spacing: 6
                     Row {
+                        spacing: 0
+                        Image {
+                            source: Qt.resolvedUrl("logo.svg")
+                            sourceSize: Qt.size(30, 30)
+                            width: 30; height: 30
+                            anchors.verticalCenter: parent.verticalCenter
+                            smooth: false
+                            // a little flutter whenever a task is ticked
+                            rotation: 0
+                            SequentialAnimation on rotation {
+                                id: flutter
+                                running: false
+                                NumberAnimation { to: -12; duration: Theme.dur(90) }
+                                NumberAnimation { to: 10; duration: Theme.dur(120) }
+                                NumberAnimation { to: 0; duration: Theme.dur(160); easing.type: Easing.OutBack }
+                            }
+                            Connections { target: Store; function onActed(args) { if (args[0] === "done") flutter.restart() } }
+                        }
+                        Item { width: 10; height: 1 }
                         Text { text: "REIATSU"; color: Theme.text; font.family: Theme.pixel; font.pixelSize: 22 }
                         Text {
                             text: "FLOW"; color: Theme.accent; font.family: Theme.pixel; font.pixelSize: 22
