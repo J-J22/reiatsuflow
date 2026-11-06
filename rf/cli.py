@@ -142,7 +142,10 @@ def main(argv=None):
     # one rf at a time: the UI, the review and the terminal all read-modify-write the same files
     with open(p.p(".lock"), "w") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
-        return run(a, p, cfg)
+        out = run(a, p, cfg)
+    # anything that waits on the user (a notification's buttons) runs after the lock is released,
+    # or a notification nobody clicks blocks every other rf call (the UI included)
+    return out() if callable(out) else out
 
 
 def run(a, p, cfg):
@@ -211,8 +214,11 @@ def run(a, p, cfg):
             key, label, _ = agents.current(cfg)
             if key == "none":
                 notify("Review time", msg)
-            elif notify("Review time", msg + f"\nGo through the day with {label}?", {"review": f"Review with {label}"}) == "review":
-                return review(p, cfg, "review")
+            else:
+                def ask():
+                    if notify("Review time", msg + f"\nGo through the day with {label}?", {"review": f"Review with {label}"}) == "review":
+                        return review(p, cfg, "review")
+                return ask
         return
     elif a.cmd == "review":
         return review(p, cfg, "review")
